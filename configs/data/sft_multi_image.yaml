@@ -1,0 +1,6 @@
+# Multi-image grounded SFT (577,077 records).
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: sft/multi_image/short.jsonl
+  - path: sft/multi_image/long.jsonl
+  - path: sft/multi_image/style_json.jsonl

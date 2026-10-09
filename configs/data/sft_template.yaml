@@ -1,0 +1,6 @@
+# Template-conditioned SFT (300,053 records).
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: sft/template/short.jsonl
+  - path: sft/template/long.jsonl
+  - path: sft/template/style_json.jsonl

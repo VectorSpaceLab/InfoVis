@@ -1,0 +1,6 @@
+# Text-to-slide SFT (892,562 records).
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: sft/t2i/short.jsonl
+  - path: sft/t2i/long.jsonl
+  - path: sft/t2i/style_json.jsonl

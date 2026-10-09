@@ -1,0 +1,14 @@
+# CPT stage 2b (3,498,406 records): two new edit operations, template part 2, a second 500k text-to-slide sample, 50k replay per earlier edit operation.
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: cpt/edit/modify_text_content.jsonl
+  - path: cpt/edit/add_block.jsonl
+  - path: cpt/template/part2_short.jsonl
+  - path: cpt/template/part2_long.jsonl
+  - path: cpt/template/part2_style_json.jsonl
+  - path: cpt/subsets/t2i_500k_b.jsonl
+  - path: cpt/subsets/edit_50k_background_update.jsonl
+  - path: cpt/subsets/edit_50k_change_color.jsonl
+  - path: cpt/subsets/edit_50k_change_font.jsonl
+  - path: cpt/subsets/edit_50k_change_typography.jsonl
+  - path: cpt/subsets/edit_50k_remove_block.jsonl

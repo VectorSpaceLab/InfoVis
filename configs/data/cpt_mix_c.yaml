@@ -1,0 +1,24 @@
+# CPT stage 2c (1,138,284 records): multi-image v2 (2-4 assets) plus 40k replay from stage 2a files.
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: cpt/multi_image/v2_2img_short.jsonl
+  - path: cpt/multi_image/v2_3img_short.jsonl
+  - path: cpt/multi_image/v2_4img_short.jsonl
+  - path: cpt/multi_image/v2_2img_long.jsonl
+  - path: cpt/multi_image/v2_3img_long.jsonl
+  - path: cpt/multi_image/v2_4img_long.jsonl
+  - path: cpt/multi_image/v2_2img_style_json.jsonl
+  - path: cpt/multi_image/v2_3img_style_json.jsonl
+  - path: cpt/multi_image/v2_4img_style_json.jsonl
+  - path: cpt/subsets/edit_40k_background_update.jsonl
+  - path: cpt/subsets/edit_40k_change_color.jsonl
+  - path: cpt/subsets/edit_40k_change_font.jsonl
+  - path: cpt/subsets/edit_40k_change_typography.jsonl
+  - path: cpt/subsets/edit_40k_remove_block.jsonl
+  - path: cpt/subsets/multi_image_v1_40k_short.jsonl
+  - path: cpt/subsets/multi_image_v1_40k_long.jsonl
+  - path: cpt/subsets/multi_image_v1_40k_style_json.jsonl
+  - path: cpt/subsets/template_part1_40k_short.jsonl
+  - path: cpt/subsets/template_part1_40k_long.jsonl
+  - path: cpt/subsets/template_part1_40k_style_json.jsonl
+  - path: cpt/subsets/t2i_40k.jsonl

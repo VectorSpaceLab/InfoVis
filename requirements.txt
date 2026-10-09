@@ -1,0 +1,14 @@
+# Tested versions from the original training environment (Python 3.12, CUDA GPUs).
+# FLUX.2-klein support needs diffusers 0.37 or newer (tested with 0.37.0.dev0 installed from source).
+torch==2.7.1
+torchvision
+diffusers>=0.37.0
+transformers==4.51.0
+accelerate==1.10.1
+datasets==3.6.0
+omegaconf==2.3.0
+safetensors
+pillow
+pyyaml
+tqdm
+tensorboard

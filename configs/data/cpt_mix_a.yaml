@@ -1,0 +1,15 @@
+# CPT stage 2a (5,387,943 records): five edit operations, multi-image v1, template part 1, 500k text-to-slide replay.
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: cpt/edit/background_update.jsonl
+  - path: cpt/edit/change_color.jsonl
+  - path: cpt/edit/change_font.jsonl
+  - path: cpt/edit/change_typography.jsonl
+  - path: cpt/edit/remove_block.jsonl
+  - path: cpt/multi_image/v1_short.jsonl
+  - path: cpt/multi_image/v1_long.jsonl
+  - path: cpt/multi_image/v1_style_json.jsonl
+  - path: cpt/template/part1_short.jsonl
+  - path: cpt/template/part1_long.jsonl
+  - path: cpt/template/part1_style_json.jsonl
+  - path: cpt/subsets/t2i_500k_a.jsonl

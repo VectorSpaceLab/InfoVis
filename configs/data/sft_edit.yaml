@@ -1,0 +1,12 @@
+# Editing SFT (139,380 records): 10k filtered pairs per CPT operation, theme switching, image replacement.
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: sft/edit/add_block.jsonl
+  - path: sft/edit/modify_text_content.jsonl
+  - path: sft/edit/background_update.jsonl
+  - path: sft/edit/change_color.jsonl
+  - path: sft/edit/change_font.jsonl
+  - path: sft/edit/change_typography.jsonl
+  - path: sft/edit/remove_block.jsonl
+  - path: sft/edit/theme_switch.jsonl
+  - path: sft/edit/image_replace.jsonl

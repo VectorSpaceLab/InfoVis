@@ -1,0 +1,9 @@
+# CPT stage 1: all text-to-slide records (5,156,778).
+# Paths are relative to the data root (data.root in the training config).
+sources:
+  - path: cpt/t2i/academic_short.jsonl
+  - path: cpt/t2i/academic_long.jsonl
+  - path: cpt/t2i/academic_style_json.jsonl
+  - path: cpt/t2i/slideshare_short.jsonl
+  - path: cpt/t2i/slideshare_long.jsonl
+  - path: cpt/t2i/slideshare_style_json.jsonl
