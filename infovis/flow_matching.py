@@ -20,7 +20,8 @@ def _shift_mu(num_tokens, x1=256, y1=0.5, x2=4096, y2=1.15):
 
 def sample_timesteps(latents, dynamic_shift=True):
     """Sample one t per latent in `latents` (B, C, H, W)."""
-    t = torch.sigmoid(torch.randn(latents.shape[0]))
+    # 1 - sigmoid(u) (same distribution as sigmoid(u)) matches the original implementation draw for draw.
+    t = 1 - torch.sigmoid(torch.randn(latents.shape[0]))
     if dynamic_shift:
         # Token count of the patchified latent grid, divided by 4 as in the original implementation.
         tokens = (latents.shape[-2] // 2) * (latents.shape[-1] // 2)

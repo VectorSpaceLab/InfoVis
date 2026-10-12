@@ -77,7 +77,8 @@ def build_inputs(batch, vae, dtype, device):
 
     return {
         "t": t, "target": target, "out_mask": out_mask.view(-1, 1, H, W),
-        "hidden_states": torch.cat(tokens, 1), "img_ids": torch.cat(ids, 1),
+        # without references the packed latents go in as is (a strided view, as in the original runs)
+        "hidden_states": torch.cat(tokens, 1) if len(tokens) > 1 else tokens[0], "img_ids": torch.cat(ids, 1),
         "image_mask": torch.cat(masks, 1), "latent_ids": ids[0], "num_out_tokens": H * W,
     }
 
@@ -164,8 +165,8 @@ def main():
                 # number of valid elements across all ranks; the factor undoes accelerate's division
                 # by accumulation steps and FSDP's gradient averaging over ranks.
                 valid = x["out_mask"].to(pred.dtype)
-                sq = ((pred.float() - x["target"].float()) ** 2 * valid).sum()
-                n_valid = accelerator.gather((valid.sum() * pred.shape[1]).float().reshape(1)).sum()
+                sq = ((pred.float() - x["target"].float()) ** 2 * valid).reshape(pred.shape[0], -1).sum(1).sum()
+                n_valid = accelerator.gather((valid.sum() * pred.shape[1]).float().reshape(1)).sum().item()
                 loss = sq * tc.gradient_accumulation_steps * accelerator.num_processes / n_valid
                 accelerator.backward(loss)
 
