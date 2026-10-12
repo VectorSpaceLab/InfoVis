@@ -11,8 +11,9 @@ VisSlideBench (writes <out_dir>/<task>/<id>.png; shard over GPUs with --shard/--
 Sampling follows the paper: 50 Euler steps, CFG 4.0 with an empty negative
 prompt, 4,096 text tokens padded to full length and masked in attention, BF16,
 seed = 2233 + case index. Output size follows the evaluation runs of the
-released model: 1280x720 for t2i, and the record's width/height for template,
-multi_image and edit (floored to multiples of 16).
+released model: 1280x720 for t2i, 1376x768 for template and multi_image, and
+the source slide size for edit (the record's width/height, floored to
+multiples of 16).
 """
 
 import argparse
@@ -32,7 +33,8 @@ def load_pipeline(base_model, transformer=None, device="cuda"):
     pipe = Flux2KleinPipeline.from_pretrained(base_model, torch_dtype=torch.bfloat16)
     if transformer:
         pipe.register_modules(transformer=Flux2Transformer2DModel.from_pretrained(transformer, torch_dtype=torch.bfloat16))
-    return pipe.to(device)
+    # Casting the whole pipeline also moves fp32 buffers (Qwen3 rotary inv_freq) to BF16, as in training.
+    return pipe.to(device, dtype=torch.bfloat16)
 
 
 def prepare_condition_images(pipe, images):
@@ -112,7 +114,7 @@ def run_bench(pipe, args):
         if os.path.exists(path):
             continue
         inputs = [r["source_image"]] if args.task == "edit" else r["input_images"]
-        size = (1280, 720) if args.task == "t2i" else (r["width"], r["height"])
+        size = {"t2i": (1280, 720), "edit": (r["width"], r["height"])}.get(args.task, (1376, 768))
         width, height = (args.width, args.height) if args.width else size
         img = generate(pipe, r["instruction"], [open_image(os.path.join(args.bench_root, p)) for p in inputs],
                        width=width, height=height, steps=args.steps, guidance=args.guidance,

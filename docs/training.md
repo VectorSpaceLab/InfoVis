@@ -65,4 +65,4 @@ Merging runs on CPU and needs about 100 GB of RAM.
 
 - **Text features.** The transformer reads three Qwen3 layers concatenated along the feature axis. `text_layer_offset: 1` (training default) takes the outputs of decoder layers 9, 18, and 27; `--text_layer_offset 0` (inference default) takes `hidden_states[9, 18, 27]`, the FLUX.2-klein pipeline convention. They differ by one residual block, and the released model's flow-matching loss on training samples is the same under either (within 0.1%).
 - **Sampling.** 50 Euler steps, classifier-free guidance 4.0 with an empty negative prompt, a 4,096-token text context, and BF16. Input images are capped at 1024x1024 pixels and center-cropped to multiples of 32.
-- **VisSlideBench resolution.** `scripts/infer_visslidebench.sh` generates text-to-slide cases at 1280x720 and the other tracks at the `width` and `height` of each record, with seed `2233 + index`.
+- **VisSlideBench resolution.** `scripts/infer_visslidebench.sh` generates text-to-slide cases at 1280x720, template and multi-image cases at 1376x768, and editing cases at the size of the source slide (`width` x `height` of the record), with seed `2233 + index`.
