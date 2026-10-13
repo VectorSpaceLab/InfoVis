@@ -1,9 +1,10 @@
 <h1 align="center">InfoVis: Unified Slide Image Generation and Editing</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Paper-coming%20soon-b31b1b.svg" alt="paper">
-  <img src="https://img.shields.io/badge/InfoVis-🤗%20coming%20soon-yellow" alt="model">
-  <img src="https://img.shields.io/badge/VisSlideBench-🤗%20coming%20soon-yellow" alt="benchmark">
+  <img src="https://img.shields.io/badge/arXiv%20paper-coming%20soon-b31b1b.svg" alt="arxiv">
+  <a href="https://huggingface.co/InfoVis/InfoVis"><img src="https://img.shields.io/badge/InfoVis-🤗-yellow" alt="model"></a>
+  <a href="https://huggingface.co/datasets/InfoVis/VisSlideBench"><img src="https://img.shields.io/badge/VisSlideBench-🤗-yellow" alt="benchmark"></a>
+  <a href="https://huggingface.co/datasets/InfoVis/Data"><img src="https://img.shields.io/badge/InfoVis--Data-🤗-yellow" alt="data"></a>
 </p>
 
 <h4 align="center">
@@ -31,7 +32,7 @@
 
 ## 🔥 News
 
-- **2026-10-09**: Training and inference code released.
+- **2026-10**: Code, model weights, VisSlideBench with its evaluation code, and the SFT training data are released.
 
 ## 📖 Introduction
 
@@ -50,9 +51,10 @@ Per-task results and more baselines are in the paper.
 ## 📌 TODO
 
 - [x] Training and inference code.
-- [ ] InfoVis model weights.
-- [ ] VisSlideBench and evaluation code.
-- [ ] Training data.
+- [x] InfoVis model weights.
+- [x] VisSlideBench and evaluation code.
+- [x] SFT training data.
+- [ ] Continual-pretraining data.
 
 ## 🚀 Quick Start
 
@@ -81,6 +83,12 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 ### 🧪 Inference
 
+Download the weights (or pass `--transformer InfoVis/InfoVis` to load them directly from Hugging Face):
+
+```bash
+hf download InfoVis/InfoVis --local-dir checkpoints/InfoVis
+```
+
 ```bash
 # Text-to-slide
 python inference.py --transformer checkpoints/InfoVis \
@@ -98,8 +106,11 @@ python inference.py --transformer checkpoints/InfoVis \
 To run all four VisSlideBench tracks on 8 GPUs:
 
 ```bash
-bash scripts/infer_visslidebench.sh checkpoints/InfoVis /path/to/VisSlideBench outputs/infovis
+hf download InfoVis/VisSlideBench --repo-type dataset --local-dir VisSlideBench
+bash scripts/infer_visslidebench.sh checkpoints/InfoVis VisSlideBench outputs/infovis
 ```
+
+The scoring scripts and judge prompts are in `VisSlideBench/eval`; see its README.
 
 ## 🏋️ Training
 
@@ -109,11 +120,11 @@ One script runs every stage; each stage is a config in `configs/train/`:
 NNODES=10 NODE_RANK=$RANK MASTER_ADDR=$MASTER bash scripts/train.sh configs/train/02_cpt_mix_a.yaml
 ```
 
-See [docs/training.md](docs/training.md) for the data format, all stage configs, and how to merge the SFT branches.
+The SFT data is available at [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data); the continual-pretraining data will follow. See [docs/training.md](docs/training.md) for the data format, all stage configs, and how to merge the SFT branches.
 
 ## 📜 License
 
-InfoVis weights are a derivative of FLUX.2-klein-base-9B and follow the [FLUX Non-Commercial License](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B).
+The code is released under the [Apache-2.0 License](LICENSE). The InfoVis weights are a derivative of FLUX.2-klein-base-9B and follow the [FLUX Non-Commercial License](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B). VisSlideBench and the training data are released under CC BY-NC 4.0; see their dataset cards for details.
 
 ## 🙏 Acknowledgements
 
@@ -124,8 +135,10 @@ InfoVis builds on [FLUX.2-klein](https://huggingface.co/black-forest-labs/FLUX.2
 If you find this repository or our work useful, please consider giving a star ⭐ and citation 🦖:
 
 ```bibtex
-@misc{infovis2026,
-  title  = {InfoVis: Unified Slide Image Generation and Editing},
-  year   = {2026}
+@article{wang2026infovis,
+  title={InfoVis: Unified Slide Image Generation and Editing},
+  author={Jiahao Wang and Xiyan Jiang and Chenyuan Wu and Haoqiang Zhang and Xin Luo and Yueze Wang and Defu Lian and Bo Zhang and Jiajun Zhang and Zheng Liu},
+  journal={arXiv preprint arXiv:XXXX.XXXXX},
+  year={2026}
 }
 ```

@@ -1,9 +1,10 @@
 <h1 align="center">InfoVis: Unified Slide Image Generation and Editing</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Paper-coming%20soon-b31b1b.svg" alt="paper">
-  <img src="https://img.shields.io/badge/InfoVis-🤗%20coming%20soon-yellow" alt="model">
-  <img src="https://img.shields.io/badge/VisSlideBench-🤗%20coming%20soon-yellow" alt="benchmark">
+  <img src="https://img.shields.io/badge/arXiv%20paper-coming%20soon-b31b1b.svg" alt="arxiv">
+  <a href="https://huggingface.co/InfoVis/InfoVis"><img src="https://img.shields.io/badge/InfoVis-🤗-yellow" alt="model"></a>
+  <a href="https://huggingface.co/datasets/InfoVis/VisSlideBench"><img src="https://img.shields.io/badge/VisSlideBench-🤗-yellow" alt="benchmark"></a>
+  <a href="https://huggingface.co/datasets/InfoVis/Data"><img src="https://img.shields.io/badge/InfoVis--Data-🤗-yellow" alt="data"></a>
 </p>
 
 <h4 align="center">
@@ -31,7 +32,7 @@
 
 ## 🔥 最新动态
 
-- **2026-10-09**：发布训练代码和推理代码。
+- **2026-10**：发布代码、模型权重、VisSlideBench 及评测代码，以及 SFT 训练数据。
 
 ## 📖 简介
 
@@ -50,9 +51,10 @@ InfoVis 的训练分三个阶段：幻灯片继续预训练、四任务混合继
 ## 📌 TODO
 
 - [x] 训练代码与推理代码。
-- [ ] InfoVis 模型权重。
-- [ ] VisSlideBench 及评测代码。
-- [ ] 训练数据。
+- [x] InfoVis 模型权重。
+- [x] VisSlideBench 及评测代码。
+- [x] SFT 训练数据。
+- [ ] 继续预训练数据。
 
 ## 🚀 快速开始
 
@@ -81,6 +83,12 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 ### 🧪 推理
 
+下载权重（也可以直接传 `--transformer InfoVis/InfoVis`，从 Hugging Face 加载）：
+
+```bash
+hf download InfoVis/InfoVis --local-dir checkpoints/InfoVis
+```
+
 ```bash
 # 文生幻灯片
 python inference.py --transformer checkpoints/InfoVis \
@@ -98,8 +106,11 @@ python inference.py --transformer checkpoints/InfoVis \
 用 8 张 GPU 跑完 VisSlideBench 的四个子任务：
 
 ```bash
-bash scripts/infer_visslidebench.sh checkpoints/InfoVis /path/to/VisSlideBench outputs/infovis
+hf download InfoVis/VisSlideBench --repo-type dataset --local-dir VisSlideBench
+bash scripts/infer_visslidebench.sh checkpoints/InfoVis VisSlideBench outputs/infovis
 ```
+
+打分脚本和评测 prompt 在 `VisSlideBench/eval` 下，用法见其中的 README。
 
 ## 🏋️ 训练
 
@@ -109,11 +120,11 @@ bash scripts/infer_visslidebench.sh checkpoints/InfoVis /path/to/VisSlideBench o
 NNODES=10 NODE_RANK=$RANK MASTER_ADDR=$MASTER bash scripts/train.sh configs/train/02_cpt_mix_a.yaml
 ```
 
-数据格式、各阶段配置和 SFT 分支的融合方法见 [docs/training.md](docs/training.md)（英文）。
+SFT 数据已发布在 [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data)，继续预训练数据将稍后发布。数据格式、各阶段配置和 SFT 分支的融合方法见 [docs/training.md](docs/training.md)（英文）。
 
 ## 📜 许可证
 
-InfoVis 权重是 FLUX.2-klein-base-9B 的衍生模型，遵循 [FLUX Non-Commercial License](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B)。
+代码采用 [Apache-2.0 许可证](LICENSE)。InfoVis 权重是 FLUX.2-klein-base-9B 的衍生模型，遵循 [FLUX Non-Commercial License](https://huggingface.co/black-forest-labs/FLUX.2-klein-base-9B)。VisSlideBench 和训练数据采用 CC BY-NC 4.0 许可，详见各自的数据集说明。
 
 ## 🙏 致谢
 
@@ -124,8 +135,10 @@ InfoVis 基于 [FLUX.2-klein](https://huggingface.co/black-forest-labs/FLUX.2-kl
 如果本仓库或我们的工作对你有帮助，欢迎点个 star ⭐ 并引用 🦖：
 
 ```bibtex
-@misc{infovis2026,
-  title  = {InfoVis: Unified Slide Image Generation and Editing},
-  year   = {2026}
+@article{wang2026infovis,
+  title={InfoVis: Unified Slide Image Generation and Editing},
+  author={Jiahao Wang and Xiyan Jiang and Chenyuan Wu and Haoqiang Zhang and Xin Luo and Yueze Wang and Defu Lian and Bo Zhang and Jiajun Zhang and Zheng Liu},
+  journal={arXiv preprint arXiv:XXXX.XXXXX},
+  year={2026}
 }
 ```

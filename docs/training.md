@@ -14,10 +14,16 @@ Each line of a training jsonl file is one sample. Image paths are relative to th
  "target_img_size": [1376, 768]}
 ```
 
-`configs/data/*.yaml` lists the jsonl files of each stage. Set the data root and build the CPT replay subsets once:
+`configs/data/*.yaml` lists the jsonl files of each stage. The SFT data (stages `05`–`08`) is on Hugging Face at [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data); the CPT data (stages `01`–`04`) will be released later. Download the data and set the data root:
 
 ```bash
-export INFOVIS_DATA_ROOT=/path/to/InfoVis-Data
+hf download InfoVis/Data --repo-type dataset --local-dir InfoVis-Data
+export INFOVIS_DATA_ROOT=$PWD/InfoVis-Data
+```
+
+Once the CPT data is available, build the CPT replay subsets once:
+
+```bash
 python tools/make_subsets.py --data_root $INFOVIS_DATA_ROOT
 ```
 
@@ -59,7 +65,7 @@ python tools/merge_checkpoints.py \
   --coefficients $W_T2I $W_TEMPLATE $W_MULTI $W_EDIT --output_dir checkpoints/InfoVis
 ```
 
-Merging runs on CPU and needs about 100 GB of RAM.
+The merge is a weighted average of the four branches, so the coefficients should sum to 1. Merging runs on CPU and needs about 100 GB of RAM.
 
 ## Notes
 
