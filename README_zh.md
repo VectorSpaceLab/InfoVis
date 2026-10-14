@@ -1,7 +1,7 @@
 <h1 align="center">InfoVis: Unified Slide Image Generation and Editing</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/arXiv%20paper-coming%20soon-b31b1b.svg" alt="arxiv">
+  <a href="https://arxiv.org/abs/2610.16784"><img src="https://img.shields.io/badge/arXiv-2610.16784-b31b1b.svg" alt="arxiv"></a>
   <a href="https://huggingface.co/InfoVis/InfoVis"><img src="https://img.shields.io/badge/InfoVis-🤗-yellow" alt="model"></a>
   <a href="https://huggingface.co/datasets/InfoVis/VisSlideBench"><img src="https://img.shields.io/badge/VisSlideBench-🤗-yellow" alt="benchmark"></a>
   <a href="https://huggingface.co/datasets/InfoVis/Data"><img src="https://img.shields.io/badge/InfoVis--Data-🤗-yellow" alt="data"></a>
@@ -32,7 +32,7 @@
 
 ## 🔥 最新动态
 
-- **2026-10**：发布代码、模型权重、VisSlideBench 及评测代码，以及 SFT 训练数据。
+- **2026-10**：论文已发布在 [arXiv](https://arxiv.org/abs/2610.16784)；代码、模型权重、VisSlideBench 及评测代码，以及全部训练数据（继续预训练与 SFT）均已发布。
 
 ## 📖 简介
 
@@ -54,7 +54,7 @@ InfoVis 的训练分三个阶段：幻灯片继续预训练、四任务混合继
 - [x] InfoVis 模型权重。
 - [x] VisSlideBench 及评测代码。
 - [x] SFT 训练数据。
-- [ ] 继续预训练数据。
+- [x] 继续预训练数据。
 
 ## 🚀 快速开始
 
@@ -120,7 +120,7 @@ bash scripts/infer_visslidebench.sh checkpoints/InfoVis VisSlideBench outputs/in
 NNODES=10 NODE_RANK=$RANK MASTER_ADDR=$MASTER bash scripts/train.sh configs/train/02_cpt_mix_a.yaml
 ```
 
-SFT 数据已发布在 [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data)，继续预训练数据将稍后发布。数据格式、各阶段配置和 SFT 分支的融合方法见 [docs/training.md](docs/training.md)（英文）。
+全部训练数据已发布在 [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data)。数据格式、各阶段配置和 SFT 分支的融合方法见 [docs/training.md](docs/training.md)（英文）。
 
 ## 📜 许可证
 
@@ -138,7 +138,7 @@ InfoVis 基于 [FLUX.2-klein](https://huggingface.co/black-forest-labs/FLUX.2-kl
 @article{wang2026infovis,
   title={InfoVis: Unified Slide Image Generation and Editing},
   author={Jiahao Wang and Xiyan Jiang and Chenyuan Wu and Haoqiang Zhang and Xin Luo and Yueze Wang and Defu Lian and Bo Zhang and Jiajun Zhang and Zheng Liu},
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
+  journal={arXiv preprint arXiv:2610.16784},
   year={2026}
 }
 ```

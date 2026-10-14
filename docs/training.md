@@ -14,14 +14,15 @@ Each line of a training jsonl file is one sample. Image paths are relative to th
  "target_img_size": [1376, 768]}
 ```
 
-`configs/data/*.yaml` lists the jsonl files of each stage. The SFT data (stages `05`–`08`) is on Hugging Face at [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data); the CPT data (stages `01`–`04`) will be released later. Download the data and set the data root:
+`configs/data/*.yaml` lists the jsonl files of each stage. The data of all stages is on Hugging Face at [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data). Download it, extract the image shards in place, and set the data root:
 
 ```bash
 hf download InfoVis/Data --repo-type dataset --local-dir InfoVis-Data
+(cd InfoVis-Data && for f in images/*/*.tar; do tar xf "$f"; done)
 export INFOVIS_DATA_ROOT=$PWD/InfoVis-Data
 ```
 
-Once the CPT data is available, build the CPT replay subsets once:
+Build the CPT replay subsets once:
 
 ```bash
 python tools/make_subsets.py --data_root $INFOVIS_DATA_ROOT

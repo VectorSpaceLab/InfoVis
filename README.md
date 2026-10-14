@@ -1,7 +1,7 @@
 <h1 align="center">InfoVis: Unified Slide Image Generation and Editing</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/arXiv%20paper-coming%20soon-b31b1b.svg" alt="arxiv">
+  <a href="https://arxiv.org/abs/2610.16784"><img src="https://img.shields.io/badge/arXiv-2610.16784-b31b1b.svg" alt="arxiv"></a>
   <a href="https://huggingface.co/InfoVis/InfoVis"><img src="https://img.shields.io/badge/InfoVis-🤗-yellow" alt="model"></a>
   <a href="https://huggingface.co/datasets/InfoVis/VisSlideBench"><img src="https://img.shields.io/badge/VisSlideBench-🤗-yellow" alt="benchmark"></a>
   <a href="https://huggingface.co/datasets/InfoVis/Data"><img src="https://img.shields.io/badge/InfoVis--Data-🤗-yellow" alt="data"></a>
@@ -32,7 +32,7 @@
 
 ## 🔥 News
 
-- **2026-10**: Code, model weights, VisSlideBench with its evaluation code, and the SFT training data are released.
+- **2026-10**: The paper is on [arXiv](https://arxiv.org/abs/2610.16784). Code, model weights, VisSlideBench with its evaluation code, and all training data (continual pretraining and SFT) are released.
 
 ## 📖 Introduction
 
@@ -54,7 +54,7 @@ Per-task results and more baselines are in the paper.
 - [x] InfoVis model weights.
 - [x] VisSlideBench and evaluation code.
 - [x] SFT training data.
-- [ ] Continual-pretraining data.
+- [x] Continual-pretraining data.
 
 ## 🚀 Quick Start
 
@@ -120,7 +120,7 @@ One script runs every stage; each stage is a config in `configs/train/`:
 NNODES=10 NODE_RANK=$RANK MASTER_ADDR=$MASTER bash scripts/train.sh configs/train/02_cpt_mix_a.yaml
 ```
 
-The SFT data is available at [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data); the continual-pretraining data will follow. See [docs/training.md](docs/training.md) for the data format, all stage configs, and how to merge the SFT branches.
+The training data of all stages is available at [InfoVis/Data](https://huggingface.co/datasets/InfoVis/Data). See [docs/training.md](docs/training.md) for the data format, all stage configs, and how to merge the SFT branches.
 
 ## 📜 License
 
@@ -138,7 +138,7 @@ If you find this repository or our work useful, please consider giving a star �
 @article{wang2026infovis,
   title={InfoVis: Unified Slide Image Generation and Editing},
   author={Jiahao Wang and Xiyan Jiang and Chenyuan Wu and Haoqiang Zhang and Xin Luo and Yueze Wang and Defu Lian and Bo Zhang and Jiajun Zhang and Zheng Liu},
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
+  journal={arXiv preprint arXiv:2610.16784},
   year={2026}
 }
 ```
