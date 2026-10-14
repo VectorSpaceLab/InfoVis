@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InfoVis: Unified Slide Image Generation and Editing</title>
+<meta name="description" content="InfoVis is a unified 9B model for slide image generation and editing, with the VisSlideBench benchmark and 15M training records.">
+<meta property="og:title" content="InfoVis: Unified Slide Image Generation and Editing">
+<meta property="og:description" content="One 9B model for text-to-slide, template-conditioned and multi-image grounded generation, and slide editing.">
+<meta property="og:image" content="static/images/overview.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<header class="hero">
+  <h1><span class="brand">InfoVis</span>: Unified Slide Image Generation and Editing</h1>
+  <p class="authors"><span>Jiahao Wang<sup>1,2,∗</sup></span> <span>Xiyan Jiang<sup>2,3,∗</sup></span> <span>Chenyuan Wu<sup>4,∗</sup></span> <span>Haoqiang Zhang<sup>4,†</sup></span> <span>Xin Luo<sup>4</sup></span> <span>Yueze Wang<sup>2</sup></span> <span>Defu Lian<sup>4</sup></span> <span>Bo Zhang<sup>3</sup></span> <span>Jiajun Zhang<sup>1</sup></span> <span>Zheng Liu<sup>2,‡</sup></span></p>
+  <p class="affils"><span><sup>1</sup>Institute of Automation, Chinese Academy of Sciences</span> <span><sup>2</sup>Beijing Academy of Artificial Intelligence</span> <span><sup>3</sup>Zhejiang University</span> <span><sup>4</sup>University of Science and Technology of China</span></p>
+  <p class="marks"><sup>∗</sup>Equal contribution &nbsp; <sup>†</sup>Core contributor &nbsp; <sup>‡</sup>Corresponding author</p>
+  <nav class="links"><a class="btn" href="https://arxiv.org/abs/2610.16784" target="_blank" rel="noopener"><span>📄</span>Paper</a><a class="btn" href="https://github.com/VectorSpaceLab/InfoVis" target="_blank" rel="noopener"><span>💻</span>Code</a><a class="btn" href="https://huggingface.co/spaces/sabulin/InfoVis" target="_blank" rel="noopener"><span>🚀</span>Demo</a><a class="btn" href="https://huggingface.co/InfoVis/InfoVis" target="_blank" rel="noopener"><span>🤗</span>Model</a><a class="btn" href="https://huggingface.co/datasets/InfoVis/VisSlideBench" target="_blank" rel="noopener"><span>📊</span>VisSlideBench</a><a class="btn" href="https://huggingface.co/datasets/InfoVis/Data" target="_blank" rel="noopener"><span>📦</span>Training Data</a></nav>
+</header>
+<main>
+  <section class="teaser">
+    <img src="static/images/overview.jpg" alt="InfoVis overview">
+    <p class="caption">One model handles four slide tasks: text-to-slide generation, template-conditioned generation, multi-image grounded generation, and instruction-based slide editing.</p>
+  </section>
+  <section><h2>Abstract</h2><p class="abstract">Generating and editing presentation slides requires models to combine accurate text rendering, instruction following, visual grounding, aesthetic design, and precise editing within one canvas. Existing work covers only subsets of these capabilities and lacks large-scale slide-native supervision and diagnostic evaluation. We formulate four slide-centric tasks and build a scalable data engine with over 13M continual-pretraining records and 1.9M supervised fine-tuning records. We also introduce VisSlideBench, a benchmark of 1,527 manually screened instances that covers all four tasks with task-specific, multidimensional evaluation. Its automatic rankings agree with blinded, dimension-wise human rankings. Using these resources, we train InfoVis, a unified 9B slide generation and editing model. On VisSlideBench, InfoVis leads every evaluated open-source model on all eleven metrics and scores 7.94 overall against 7.99 for Nano-Banana-2. Starting from FLUX.2-klein-base-9B, slide-specific post-training adds 1.6 points overall, with the largest generation gains in content faithfulness; the remaining gap to proprietary models is smallest in content faithfulness and largest in aesthetic quality. Built on InfoVis, our document-to-slide workflow achieves the second-highest Aesthetics score on the external SlidesGen-Bench. We release the model, code, data, and benchmark.</p></section>
+  <section class="highlights">
+    <div><b>4</b><span>slide tasks in one 9B model</span></div>
+    <div><b>13M+ / 1.9M</b><span>continual-pretraining / SFT records</span></div>
+    <div><b>1,527</b><span>VisSlideBench cases, manually screened</span></div>
+    <div><b>7.94</b><span>VisSlideBench overall, best open-source on all 11 metrics</span></div>
+  </section>
+  <section id="showcase">
+    <h2>Showcase</h2>
+    <p class="note">Good cases from the paper appendix. Click an image to open it at full size; expand "Instruction" to see the prompt. <a href="https://huggingface.co/spaces/sabulin/InfoVis" target="_blank" rel="noopener">Try them in the demo →</a></p>
+    <div class="task" id="t2i"><h3>Text-to-slide</h3><p class="task-desc">A complete slide from a text request, a detailed description, or a structured style_json specification.</p><div class="cases t2i"><figure class="case t2i"><div class="single"><a href="static/cases/t2i/01_foundations_of_rhetoric_out.jpg" target="_blank"><img src="static/cases/t2i/01_foundations_of_rhetoric_out.jpg" alt="Foundations of Rhetoric" loading="lazy"></a></div><figcaption>Foundations of Rhetoric</figcaption><details><summary>Instruction</summary><pre>This presentation slide has a solid muted olive-green background (#7A8B5C) and a two-column layout. In the upper left, the title &quot;FOUNDATIONS OF RHETORIC&quot; is set over two lines in large, thin, off-white serif capitals. In the upper right, the subtitle &quot;(The Art of Persuasion)&quot; appears in a light sans-serif font, with a thin off-white horizontal rule beneath it spanning the right column.
+
+The lower left quadrant features a large coral-red circle (#F0705A) partially cut off by the left and bottom edges of the slide. In front of it stands a classical white marble bust of a Greek man with curly hair and draped robes, shown from the chest up and looking toward the right.
+
+On the right, below the rule, a heading reads &quot;The Three Core Pillars:&quot; followed by four bullet points in off-white sans-serif text, with the leading term of each bullet in semi-bold:
+- &quot;Ethos: Establishes the credibility and moral character of the speaker&quot;
+- &quot;Pathos: Appeals to the audience&#x27;s emotions and values&quot;
+- &quot;Logos: Employs logical reasoning and factual evidence to prove a point&quot;
+- &quot;Conclusion: True persuasion thrives when all three pillars unite&quot;
+
+The overall look is elegant and classical, with generous spacing and high contrast between the off-white text and the green background.</pre></details></figure><figure class="case t2i"><div class="single"><a href="static/cases/t2i/09_guide_to_productive_learning_out.jpg" target="_blank"><img src="static/cases/t2i/09_guide_to_productive_learning_out.jpg" alt="Guide to Productive Learning" loading="lazy"></a></div><figcaption>Guide to Productive Learning</figcaption><details><summary>Instruction</summary><pre>This presentation slide uses a soft pastel gradient background that shifts from light blue on the left to peach on the right, decorated with small floating bubbles and stars, with leafy plants and tiny flowers along the bottom corners, all rendered in a cute 3D clay style. At the top center, the title &quot;GUIDE TO PRODUCTIVE LEARNING&quot; is written in large, bold, rounded coral-red letters with a white outline.
+
+Below the title are three rounded cream-colored cards side by side, each topped by a coral header band with white text:
+1. &quot;1. EFFECTIVE STUDY METHODS&quot;, with the bullets &quot;Active Recall Practice&quot;, &quot;Spaced Repetition&quot;, &quot;Mind Mapping Techniques&quot;, and &quot;Teaching Others Concepts&quot;; at the bottom of the card, a smiling yellow pencil, colorful sticky notes, and a coral notebook.
+2. &quot;2. TIME MANAGEMENT TIPS&quot;, with the bullets &quot;Set Clear Daily Goals&quot;, &quot;Use Pomodoro Technique&quot;, &quot;Eliminate Distractions&quot;, and &quot;Take Regular Breaks&quot;; at the bottom, a smiling red alarm clock next to a smiling spiral notepad.
+3. &quot;3. OPTIMAL LEARNING ENVIRONMENT&quot;, with the bullets &quot;Choose Quiet Study Spaces&quot;, &quot;Maintain Good Posture&quot;, &quot;Ensure Proper Lighting&quot;, and &quot;Keep Materials Organized&quot;; at the bottom, a sleeping white cat with &quot;Zzz&quot; next to a steaming cup of coffee on a small wooden table.
+
+The bullet text is dark brown in a rounded sans-serif font. The overall style is cheerful, soft, and friendly, like a 3D cartoon infographic.</pre></details></figure><figure class="case t2i"><div class="single"><a href="static/cases/t2i/10_healthy_digital_habits_out.jpg" target="_blank"><img src="static/cases/t2i/10_healthy_digital_habits_out.jpg" alt="3 Tips to Build Healthy Digital Habits" loading="lazy"></a></div><figcaption>3 Tips to Build Healthy Digital Habits</figcaption><details><summary>Instruction</summary><pre>This presentation slide has a solid near-black background (#1C1C1C). On the left, a rounded-corner photo panel with a hot-pink background shows a woman with dark hair tied back, wearing a bright pink blazer, sitting at a desk with a laptop and concentrating on the smartphone she is tapping with her finger.
+
+On the right, a large white rounded rectangle contains the title &quot;3 TIPS TO BUILD HEALTHY DIGITAL HABITS&quot; in very large, bold, black condensed sans-serif capitals over two lines. Below it are three rounded cards side by side, each with a bold black heading and smaller black body text:
+- A mint-green card (#20D3A8): &quot;SET CLEAR SCREEN BOUNDARIES&quot; - &quot;Choose specific times to check messages, social media, and news. Protect focused work, rest, and personal moments from constant digital interruption.&quot;
+- A light lavender card (#E2DCF5): &quot;CURATE YOUR DIGITAL SPACE&quot; - &quot;Follow sources that inform, inspire, or support your goals. Remove apps, alerts, and feeds that drain attention or create unnecessary stress.&quot;
+- A golden-yellow card (#F5C518): &quot;RECONNECT OFFLINE DAILY&quot; - &quot;Make room for movement, face-to-face conversation, quiet reflection, or creative hobbies. Use technology as a tool, not the center of your day.&quot;
+
+The design is bold, modern, and high-contrast, with the vivid pink photo and the colorful cards standing out against the dark background.</pre></details></figure><figure class="case t2i"><div class="single"><a href="static/cases/t2i/04_innovation_strategy_framework_out.jpg" target="_blank"><img src="static/cases/t2i/04_innovation_strategy_framework_out.jpg" alt="Innovation Strategy Framework" loading="lazy"></a></div><figcaption>Innovation Strategy Framework</figcaption><details><summary>Instruction</summary><pre>This presentation slide is split into two vertical halves. The left half has a solid bright blue background (#2F6FD6). At the top left, the title &quot;INNOVATION STRATEGY FRAMEWORK&quot; is written across three lines in very large, bold, orange (#F4A261) sans-serif capitals. Below it, the subtitle &quot;Analysis &amp; Implementation Guide&quot; appears in white. Under the subtitle, six white bullet points in a condensed sans-serif font read: &quot;Define Core Innovation Objectives&quot;, &quot;Identify Market Opportunities&quot;, &quot;Develop Customer-Centric Solutions&quot;, &quot;Establish Innovation Metrics &amp; KPIs&quot;, &quot;Create Cross-Functional Collaboration&quot;, and &quot;Build Scalable Implementation Roadmap&quot;.
+
+The right half is a bright outdoor photograph: a young woman with long brown hair stands on a grassy coastline in front of a calm blue sea and a clear sky. She wears a translucent white hooded raincoat over a striped dress, holds the coat closed with both hands, and gazes thoughtfully into the distance. Floating 3D abstract shapes decorate the photo: an iridescent pink-and-blue blob in its top left corner, a cluster of glossy orange spheres in its top right corner, and another pastel blue-pink blob in its bottom right corner.
+
+The style is modern and energetic, combining bold typography with a vivid lifestyle photograph.</pre></details></figure><figure class="case t2i"><div class="single"><a href="static/cases/t2i/08_ontology_implementation_out.jpg" target="_blank"><img src="static/cases/t2i/08_ontology_implementation_out.jpg" alt="Ontology Implementation" loading="lazy"></a></div><figcaption>Ontology Implementation</figcaption><details><summary>Instruction</summary><pre>A presentation slide bears the title &quot;ONTOLOGY IMPLEMENTATION&quot; in large black serif capitals and the subtitle &quot;A Structured Approach to Knowledge Representation.&quot; It presents a four-step process laid out horizontally across the slide, set against a light beige background. Four separate rounded rectangular boxes with thin gray borders and soft shadows are shown, each with a numbered circle (1 to 4) at the top. The first box, labeled &quot;ONTOLOGY DESIGN,&quot; contains the following bullet points: &quot;Define Boundaries and Coverage,&quot; &quot;Identify Concepts and Relationships,&quot; and &quot;Specify Properties and Constraints.&quot; The second box, titled &quot;KNOWLEDGE ACQUISITION,&quot; includes: &quot;Gather Information from Sources,&quot; &quot;Standardize Datasets into Schemas,&quot; and &quot;Extract Core Entities and Instances.&quot; The third box, named &quot;IMPLEMENTATION FORMALIZATION,&quot; lists: &quot;Select A Formal Ontology Language,&quot; &quot;Define Classes, Axioms, and Rules,&quot; and &quot;Integrate with Existing Systems.&quot; The fourth box, titled &quot;VALIDATION MAINTENANCE,&quot; features: &quot;Verify Consistency and Correctness,&quot; &quot;Evaluate Against Defined Criteria,&quot; and &quot;Iterative Update and Refine.&quot; At the bottom center of the slide, the footer reads &quot;Presented by InfoVis — turning ideas into intelligent slides.&quot;</pre></details></figure><figure class="case t2i"><div class="single"><a href="static/cases/t2i/06_data_regularized_q_out.jpg" target="_blank"><img src="static/cases/t2i/06_data_regularized_q_out.jpg" alt="Data-regularized Q" loading="lazy"></a></div><figcaption>Data-regularized Q</figcaption><details><summary>Instruction</summary><pre>### SYSTEM ROLE &amp; OBJECTIVE
+You are the world&#x27;s most advanced AI Presentation Rendering Engine. Your architecture combines the creativity of a top-tier Art Director with the precision of a Data Engineer.
+
+**Your Goal:** Convert the provided **Structured Content JSON** into a single, high-fidelity presentation slide image.
+
+### INPUT DATA INTERPRETATION
+You will receive a JSON object representing ONE slide. You must parse it as follows:
+1.  **`global_style`**: Defines the immutable &quot;laws of physics&quot; for the slide (lighting, canvas material, color palette).
+2.  **`visual_hierarchy`**: Defines the compositional logic and mood.
+3.  **`blocks`**: The specific content elements (text, images, shapes) to be rendered.
+
+### CRITICAL EXECUTION PROTOCOLS (NON-NEGOTIABLE)
+
+#### 1. IMAGE INTEGRITY &amp; PRESERVATION (HIGHEST PRIORITY)
+*   **The Rule:** When you encounter a block with `type: &quot;image&quot;`, you MUST embed the provided source images into your output.
+*   **Input Images:** Source images are provided as attachments along with this prompt. These are the ACTUAL images you must use.
+*   **Strict Constraint:** You must **STRICTLY PRESERVE** the internal pixel content of these source images.
+    *   **DO NOT** crop, distort, reimagine, or hallucinate the data inside the chart/table.
+    *   **DO NOT** replace the provided images with generic stock photos or AI-generated alternatives.
+    *   **DO NOT** ignore or omit the provided images - they MUST appear in the final slide.
+*   **Allowed Actions:** You MAY apply external styling to the *container* of the image (e.g., adding a glassmorphic border, a drop shadow, or a 3D perspective tilt) to make it fit the `theme_name`, provided the data remains legible.
+*   **Multiple Images:** If multiple images are provided, arrange them appropriately (side-by-side, stacked, or as specified in `special_instructions`).
+
+#### 2. TEXT ADAPTATION &amp; BOUNDARIES
+*   **The Rule:** The JSON `content` field is your EXCLUSIVE source of text.
+*   **Strict Constraint:**
+    *   **NO Hallucinations:** Do not invent new text, headings, or summaries to fill space.
+    *   **NO Fluff:** If the content is sparse, embrace the negative space (whitespace) for a clean, high-end look.
+    *   **Formatting:** You are authorized to adjust typography (kerning, line breaks, font weights) for visual impact, but strictly prevent &quot;walls of text.&quot;
+*   **`role: &quot;script&quot;` Handling:** The `script` block is for **CONTEXT ONLY**. It tells you *what the slide is about* to inform your mood/lighting choices. **NEVER** render the script paragraph visually on the slide unless explicitly instructed in `special_instructions`.
+
+#### 3. THE &quot;SPECIAL_INSTRUCTIONS&quot; OVERRIDE
+*   **The Rule:** The key `special_instructions` (found in `global_style` or individual `blocks`) is the **Creative Override**.
+*   **Action:** If this key exists and contains text, it takes precedence over default rendering rules.
+    *   *Example:* If `global_style` says &quot;Blue Background&quot; but `special_instructions` says &quot;Immerse in a deep underwater bioluminescent scene,&quot; you execute the bioluminescent scene.
+    *   Use this field to add texture, lighting effects (bokeh, ray-tracing), and stylistic flair.
+
+#### 4. STRICT GLOBAL_STYLE ADHERENCE (CONSISTENCY)
+*   **The Rule:** The `global_style` defines the EXACT visual parameters that MUST be consistent across all slides.
+*   **Background:** Use EXACTLY the `background_color` specified. The background appearance must be IDENTICAL on every slide.
+*   **Fonts:** Use EXACTLY the fonts specified in `font_palette.primary` for titles and `font_palette.secondary` for body text.
+*   **Colors:** Use EXACTLY the hex codes from `color_palette` when `color_ref` references them.
+*   **Consistent Sizing by Role:**
+    *   All TITLE blocks (`font_size_weight: &quot;Dominant&quot;`) must appear at the SAME size and position on every slide.
+    *   All CORE_POINTS/LIST blocks (`font_size_weight: &quot;Subheading&quot;`) must use the SAME font style and size on every slide.
+    *   All CAPTION blocks (`font_size_weight: &quot;Caption&quot;`) must use the SAME font style and size on every slide.
+*   **Purpose:** This ensures that when multiple slides are generated independently, they will look like they belong to the same presentation - same title size, same bullet point style, same caption style.
+
+#### 5. CREATIVE DECORATIVE ELEMENTS (ENCOURAGED)
+*   **The Rule:** You are ENCOURAGED to add decorative visual elements beyond what is specified in the JSON blocks to enhance aesthetics.
+*   **Allowed Decorations:**
+    *   Decorative icons, symbols, or pictograms that relate to the slide content
+    *   Subtle geometric shapes, lines, or dividers
+    *   Background patterns, gradients, or texture overlays
+    *   Visual accents, highlights, or emphasis elements
+    *   Decorative borders, frames, or containers for content groups
+*   **Constraints:**
+    *   **DO NOT** add new text content - only use text from the JSON `content` fields
+    *   Decorative elements should complement the `global_style` theme
+    *   Keep decorations subtle and professional - they should enhance, not distract
+*   **Purpose:** Make each slide visually engaging and polished, going beyond a plain text-on-background layout.
+
+#### 6. LAYOUT DIVERSITY &amp; VISUAL VARIETY (IMPORTANT)
+*   **The Rule:** AVOID the monotonous &quot;title + bullet list&quot; pattern. Each slide should feel visually unique.
+*   **Execution:**
+    *   **Text-heavy slides:** Arrange multiple body text blocks in creative layouts (columns, asymmetric placement, staggered positions) rather than a vertical list.
+    *   **Visual-led slides:** When images, tables, or illustrations dominate, let them take center stage. Body text (if any) should be minimal and positioned as supporting elements.
+    *   **Mixed slides:** Balance text and visuals with dynamic compositions—side-by-side, overlapping containers, or layered arrangements.
+    *   **Embrace whitespace:** If content is sparse, use negative space intentionally for a clean, premium aesthetic. Do NOT artificially stretch or pad content.
+*   **Variety Techniques:**
+    *   Vary text block positions (left-aligned, right-aligned, centered, scattered)
+    *   Use different container shapes or groupings per slide
+    *   Adjust visual weight distribution (sometimes title dominant, sometimes visual dominant)
+*   **Purpose:** Create a presentation that feels dynamic and engaging, where each slide has its own compositional identity while still adhering to `global_style` consistency.
+
+### OUTPUT GENERATION
+Generate the final image representation of the slide based on these rules.
+
+### SLIDE JSON:
+```json
+{
+  &quot;global_style&quot;: {
+    &quot;theme_name&quot;: &quot;Technical Research Slide&quot;,
+    &quot;background&quot;: {
+      &quot;color&quot;: &quot;#F8FAFB&quot;,
+      &quot;gradient&quot;: null,
+      &quot;texture&quot;: &quot;smooth&quot;,
+      &quot;pattern&quot;: null
+    },
+    &quot;font_palette&quot;: {
+      &quot;primary&quot;: &quot;Helvetica&quot;,
+      &quot;secondary&quot;: &quot;Helvetica&quot;
+    },
+    &quot;color_palette&quot;: {
+      &quot;primary&quot;: &quot;#3A8FB7&quot;,
+      &quot;secondary&quot;: &quot;#E4ECF4&quot;,
+      &quot;text&quot;: &quot;#222222&quot;,
+      &quot;accent&quot;: &quot;#3A8FB7&quot;
+    },
+    &quot;special_instructions&quot;: &quot;The slide uses a crisp, uncluttered academic look. Background is an off-white. Text is set in a dark charcoal sans-serif font. The main highlight is a soft teal (#3A8FB7) for chart lines and legend. The arrangement is a strict grid: theoretical formulas on the left, empirical results on the right.&quot;
+  },
+  &quot;visual_hierarchy&quot;: {
+    &quot;mood_tone&quot;: &quot;Formal, Technical, Insightful&quot;,
+    &quot;composition_style&quot;: &quot;Asymmetric Dual-Column&quot;
+  },
+  &quot;styled_slides&quot;: [
+    {
+      &quot;slide_id&quot;: 27,
+      &quot;blocks&quot;: [
+        {
+          &quot;id&quot;: &quot;title-27&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;title&quot;,
+          &quot;content&quot;: &quot;Extended Augmentation Methods: Data-regularized Q&quot;,
+          &quot;style&quot;: {
+            &quot;color&quot;: &quot;#222222&quot;,
+            &quot;font_family&quot;: &quot;Helvetica&quot;,
+            &quot;importance&quot;: &quot;dominant&quot;,
+            &quot;position&quot;: &quot;top-center&quot;,
+            &quot;text_style&quot;: {
+              &quot;font_weight&quot;: &quot;bold&quot;,
+              &quot;text_effect&quot;: [],
+              &quot;outline_color&quot;: null,
+              &quot;shadow_type&quot;: null
+            },
+            &quot;container&quot;: null,
+            &quot;special_instructions&quot;: &quot;Use a large font size, deep charcoal color, centered at the top.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-27-1&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;1. Regularize targets using multiple augmentations (K):&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Helvetica&quot;,
+            &quot;color&quot;: &quot;#222222&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;left-column, top&quot;,
+            &quot;container&quot;: null,
+            &quot;container_opacity&quot;: null,
+            &quot;special_instructions&quot;: &quot;Numbered list item, number &#x27;1&#x27; in bold.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;equation-27-1&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;equation&quot;,
+          &quot;content&quot;: {
+            &quot;latex&quot;: &quot;y_i = r_i + \\gamma \\frac{1}{K} \\sum_{k=1}^{K} Q_{\\theta}(f(s&#x27;_i, \\nu&#x27;_{i,k}), a&#x27;_{i,k})&quot;,
+            &quot;variables&quot;: &quot;y_i: target, r_i: reward, gamma: discount factor, K: number of augmentations, Q_theta: Q-network, f: augmentation function, nu: noise, a: action&quot;
+          },
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Times New Roman&quot;,
+            &quot;color&quot;: &quot;#222222&quot;,
+            &quot;position&quot;: &quot;left-column, below first body text&quot;,
+            &quot;container&quot;: null,
+            &quot;special_instructions&quot;: &quot;Standard math notation with italicized variable names.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;equation-27-2&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;equation&quot;,
+          &quot;content&quot;: {
+            &quot;latex&quot;: &quot;where a&#x27;_{i,k} \\sim \\pi(\\cdot | f(s&#x27;_i, \\nu&#x27;_{i,k}))&quot;,
+            &quot;variables&quot;: &quot;a&#x27;_{i,k}: augmented action, pi: policy distribution&quot;
+          },
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Times New Roman&quot;,
+            &quot;color&quot;: &quot;#222222&quot;,
+            &quot;position&quot;: &quot;left-column, below first equation&quot;,
+            &quot;container&quot;: null,
+            &quot;special_instructions&quot;: &quot;Smaller font size than above equation, starts with &#x27;where&#x27;.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-27-2&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;2. Regularize Q-values over several augmentations (M):&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Helvetica&quot;,
+            &quot;color&quot;: &quot;#222222&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;left-column, middle&quot;,
+            &quot;container&quot;: null,
+            &quot;container_opacity&quot;: null,
+            &quot;special_instructions&quot;: &quot;Numbered list item, number &#x27;2&#x27; in bold.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;equation-27-3&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;equation&quot;,
+          &quot;content&quot;: {
+            &quot;latex&quot;: &quot;\\theta \\leftarrow \\theta - \\lambda_{\\theta} \\nabla_{\\theta} \\frac{1}{NM} \\sum_{i=1,m=1}^{N,M} (Q_{\\theta}(f(s_i, \\nu_{i,m}), a_i) - y_i)^2&quot;,
+            &quot;variables&quot;: &quot;theta: network parameters, lambda_theta: learning rate, nabla_theta: gradient, N: batch size, M: number of augmentations&quot;
+          },
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Times New Roman&quot;,
+            &quot;color&quot;: &quot;#222222&quot;,
+            &quot;position&quot;: &quot;left-column, below second body text&quot;,
+            &quot;container&quot;: null,
+            &quot;special_instructions&quot;: &quot;Mathematical notation; variables are italicized.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;figure-1&quot;,
+          &quot;type&quot;: &quot;image&quot;,
+          &quot;role&quot;: &quot;visual_elements&quot;,
+          &quot;content&quot;: {
+            &quot;image_paths&quot;: [
+              {
+                &quot;path&quot;: &quot;imgs/img_in_chart_box_1653_583_2775_1412.jpg&quot;,
+                &quot;relative_path&quot;: &quot;imgs/img_in_chart_box_1653_583_2775_1412.jpg&quot;
+              }
+            ],
+            &quot;source&quot;: &quot;Cheetah Run performance chart&quot;,
+            &quot;caption&quot;: null
+          },
+          &quot;style&quot;: {
+            &quot;position&quot;: &quot;right-column, vertically centered&quot;,
+            &quot;image_style&quot;: &quot;Matplotlib line chart with teal line and a pale blue shaded confidence region.&quot;,
+            &quot;container&quot;: null,
+            &quot;special_instructions&quot;: &quot;The chart presents &#x27;Episode Return&#x27; vs. &#x27;Environment Steps&#x27;. The primary line is teal (#3A8FB7) with a soft blue fill for standard deviation. Grid lines are faint grey, dashed style.&quot;
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Important**: The figure block (if present) corresponds to sub-images in the slide. These images are not provided in the dataset, so you should generate appropriate visuals based on the description, layout, and style.
+
+Generate the slide image in 16:9 aspect ratio.</pre></details></figure></div></div><div class="task" id="template"><h3>Template-conditioned generation</h3><p class="task-desc">A new slide that follows the visual style of a reference slide.</p><div class="cases template"><figure class="case template"><div class="pair"><div class="inputs n1"><span class="tag">Reference</span><a href="static/cases/template/01_overview_remote_vs_office_in1.jpg" target="_blank"><img src="static/cases/template/01_overview_remote_vs_office_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/template/01_overview_remote_vs_office_out.jpg" target="_blank"><img src="static/cases/template/01_overview_remote_vs_office_out.jpg" alt="Overview: remote vs. in-office teams" loading="lazy"></a></div></div><figcaption>Overview: remote vs. in-office teams</figcaption><details><summary>Instruction</summary><pre>Create a single presentation slide with the same layout, fonts, and muted beige and green color palette as the reference slide. Keep all design elements, lines, and spacing identical, but replace every piece of text with new content of similar length for a different topic, while preserving the overall visual style.
+
+At the top left, in large serif title text, write:  
+&#x27;OVERVIEW&#x27;
+
+Centered near the top in smaller serif text, write:  
+&#x27;Compare two approaches to modern team collaboration and workflow.&#x27;
+
+Below the horizontal line, keep the green header bar across the slide. Inside the left side of this bar, in white serif text, write:  
+&#x27;REMOTE TEAMS&#x27;
+
+Inside the right side of this bar, in white serif text, write:  
+&#x27;IN‑OFFICE TEAMS&#x27;
+
+In the first row beneath the header bar, keep the left-aligned label column. In this first row’s label cell, write in uppercase serif text:  
+&#x27;COMMUNICATION&#x27;
+
+In the first row’s middle cell, centered, write:  
+&#x27;Video calls, chat apps, asynchronous updates&#x27;
+
+In the first row’s right cell, centered, write:  
+&#x27;Face‑to‑face meetings and quick hallway talks&#x27;
+
+In the second row’s label cell, write:  
+&#x27;WORKFLOW&#x27;
+
+In the second row’s middle cell, centered, write:  
+&#x27;Flexible hours, task boards, cloud‑based tools&#x27;
+
+In the second row’s right cell, centered, write:  
+&#x27;Set schedules, in‑person check‑ins, shared office files&#x27;
+
+In the third row’s label cell, write:  
+&#x27;ENVIRONMENT&#x27;
+
+In the third row’s middle cell, centered, write:  
+&#x27;Home offices, co‑working spaces, digital whiteboards&#x27;
+
+In the third row’s right cell, centered, write:  
+&#x27;Open-plan desks, conference rooms, physical whiteboards&#x27;
+
+In the fourth row’s label cell, write:  
+&#x27;TEAM CULTURE&#x27;
+
+In the fourth row’s middle cell, centered, write:  
+&#x27;Intentional rituals, virtual socials, clear documentation&#x27;
+
+In the fourth row’s right cell, centered, write:  
+&#x27;Spontaneous chats, office events, shared daily routines&#x27;
+
+Ensure all text is crisp and readable, aligned and spaced just like in the original slide, with no additional images or icons added.
+
+Reference: the attached image is a previous slide from the same deck. Treat it as the default style reference -- by default, inherit its background, palette, typography, containers, decorations and mood.
+
+Override: wherever the content description above calls for a different look (different colors, different composition, different mood, etc.), follow the content rather than the reference.
+
+Aspect ratio: 16:9.</pre></details></figure><figure class="case template"><div class="pair"><div class="inputs n1"><span class="tag">Reference</span><a href="static/cases/template/02_creative_assets_in1.jpg" target="_blank"><img src="static/cases/template/02_creative_assets_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/template/02_creative_assets_out.jpg" target="_blank"><img src="static/cases/template/02_creative_assets_out.jpg" alt="Creative Assets" loading="lazy"></a></div></div><figcaption>Creative Assets</figcaption><details><summary>Instruction</summary><pre>Construct a slide featuring a soft, luminous gradient background that flows diagonally from a pale, warm yellow in the upper left corner to a rich coral and magenta hue in the upper right, then into a deeper orange toward the bottom, with the colors blending smoothly like a sunset. On the far right side of the slide, occupying roughly the lower two‑thirds of the height, place an abstract 3D spiral sculpture made of thick, tubular rings in glossy golden‑orange, twisting inward toward an invisible center; the sculpture casts subtle, soft shadows onto the background, enhancing its depth. In the far left foreground, let a blurred, out‑of‑focus golden shape intrude slightly from the edge, echoing the same material as the spiral and adding a sense of depth of field.
+
+Across the top center of the slide, write the main heading in large, white, modern sans‑serif letters with smooth curves and generous tracking; the text reads: &quot;Creative Assets&quot;. This title should be left‑aligned but positioned so that it begins slightly left of center, and it should cast a faint, diffuse shadow to stand out against the warm gradient.
+
+In the upper right area, near the top navigation region, place three simple navigation labels in small, white, semi‑bold sans‑serif font, evenly spaced horizontally and aligned to the right edge. The leftmost label reads &quot;Overview&quot;, the middle label reads &quot;Team&quot;, and the rightmost label reads &quot;Roadmap&quot;. Above these, centered at the very top of the slide, include a rounded rectangular button with a thin white outline and transparent fill; inside this pill‑shaped button, in small white uppercase letters, write &quot;Workshop&quot;. The button should glow subtly, indicating it is the currently selected section.
+
+Below the main heading, arranged in a single horizontal row across the middle of the slide, add three rounded‑rectangle cards with transparent centers and softly glowing borders. Each card should be aligned vertically, with equal spacing between them, and they should occupy the central area from left to right without touching the extreme edges. The borders of the cards are thin, white, and slightly translucent, with a faint inner shadow that gives them a frosted‑glass look, allowing the gradient background to show through.
+
+On the left card, which represents the first deliverable, fill the interior with a slightly darker, semi‑transparent orange overlay to differentiate it, and at the top of this card write in bold white sans‑serif text: &quot;Introductory slide deck&quot;. The words should be stacked over two lines, aligned to the left inside the card. Beneath this heading, leave a line of spacing, then in smaller, regular‑weight white text, also left‑aligned, add the description: &quot;Summarize key goals, audience, and timeline in a concise visual story.&quot; This descriptive sentence should wrap naturally across two or three lines within the card, mimicking the rhythm and length of the original subtitle.
+
+On the middle card, use the same semi‑transparent orange overlay and styling. At its top, in bold white sans‑serif text, write: &quot;Interactive concept mockup&quot;. Ensure the phrase is broken across two lines so that &quot;Interactive concept&quot; appears on the first line and &quot;mockup&quot; on the second, both left‑aligned. Underneath, again in smaller white body text, left‑aligned and occupying roughly three lines, write: &quot;Demonstrate how users move through the experience, from first click to final action.&quot;
+
+On the right card, overlapping slightly in front of the large spiral sculpture but remaining clearly legible, repeat the same visual treatment. At the top of this third card, in bold white sans‑serif text, write: &quot;Launch announcement video&quot;. The words should form two lines, left‑aligned within the card. Below that heading, in smaller white text, provide a short explanation that echoes the word count and structure of the others: &quot;Highlight the product story, core benefits, and brand personality in two minutes.&quot; Let this description wrap into two or three lines, maintaining visual balance with the other cards.
+
+Throughout the slide, ensure all text remains crisp and smooth, with no visible pixelation, and that the warm gradient, glowing card borders, and sculptural 3D elements combine into a cohesive, modern, and slightly futuristic design, closely matching the layout and proportions just described while clearly featuring the new phrases &quot;Creative Assets&quot;, &quot;Workshop&quot;, &quot;Overview&quot;, &quot;Team&quot;, &quot;Roadmap&quot;, &quot;Introductory slide deck&quot;, &quot;Interactive concept mockup&quot;, and &quot;Launch announcement video&quot; in their specified positions and styles.
+
+RULES:
+(R1) The attached image is the reference slide from the same deck; treat it as the DEFAULT style reference.
+(R2) Unless the content above says otherwise, inherit from the reference: background, color palette, typography, containers, decorations, theme and mood.
+(R3) Whenever the content description above specifies a different style for a given aspect (colors, typography, layout, mood, etc.), the content OVERRIDES the reference on that aspect.
+(R4) Aspect ratio: 16:9.</pre></details></figure><figure class="case template"><div class="pair"><div class="inputs n1"><span class="tag">Reference</span><a href="static/cases/template/04_remote_work_in1.jpg" target="_blank"><img src="static/cases/template/04_remote_work_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/template/04_remote_work_out.jpg" target="_blank"><img src="static/cases/template/04_remote_work_out.jpg" alt="How Remote Work Reshapes Modern Business" loading="lazy"></a></div></div><figcaption>How Remote Work Reshapes Modern Business</figcaption><details><summary>Instruction</summary><pre>### TASK
+Generate one slide that visually belongs to the same deck as the reference image, but with its own layout.
+
+### MUST INHERIT (from reference)
+Background, colors, typography, title style and position, container/shape language, decorative style.
+
+### MUST VARY
+Composition, arrangement, grouping, focal points—based on this slide&#x27;s JSON content.
+
+### CONSTRAINTS
+- Text comes ONLY from JSON `blocks.content`.
+- Embed source images if provided.
+- Follow `special_instructions` if present.
+- Output: a polished 16:9 slide.
+
+### SLIDE JSON:
+```json
+{
+  &quot;global_style&quot;: {
+    &quot;theme_name&quot;: &quot;Remote Work in Modern Business&quot;,
+    &quot;background&quot;: {
+      &quot;color&quot;: &quot;#C4C4F7&quot;,
+      &quot;gradient&quot;: null,
+      &quot;texture&quot;: &quot;none&quot;,
+      &quot;pattern&quot;: null
+    },
+    &quot;font_palette&quot;: {
+      &quot;primary&quot;: &quot;Georgia&quot;,
+      &quot;secondary&quot;: &quot;Arial&quot;
+    },
+    &quot;color_palette&quot;: {
+      &quot;primary&quot;: &quot;#1A3A4A&quot;,
+      &quot;secondary&quot;: &quot;#000000&quot;,
+      &quot;text&quot;: &quot;#1A3A4A&quot;,
+      &quot;accent&quot;: &quot;#C4C4F7&quot;
+    },
+    &quot;special_instructions&quot;: &quot;The slide features a soft lavender background with a clean, minimalist layout. The design emphasizes the vibrant illustration of a home office on the right side, while the left side contains the title and descriptive text. The overall mood is inviting and informative, with a focus on flexibility, collaboration, and modern work.&quot;
+  },
+  &quot;visual_hierarchy&quot;: {
+    &quot;mood_tone&quot;: &quot;Inviting, Informative&quot;,
+    &quot;composition_style&quot;: &quot;Two-column&quot;
+  },
+  &quot;styled_slides&quot;: [
+    {
+      &quot;slide_id&quot;: 2,
+      &quot;blocks&quot;: [
+        {
+          &quot;id&quot;: &quot;title-2&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;title&quot;,
+          &quot;content&quot;: &quot;How Remote Work Reshapes Modern Business&quot;,
+          &quot;style&quot;: {
+            &quot;color&quot;: &quot;#1A3A4A&quot;,
+            &quot;font_family&quot;: &quot;Georgia&quot;,
+            &quot;importance&quot;: &quot;dominant&quot;,
+            &quot;position&quot;: &quot;top-left&quot;,
+            &quot;text_style&quot;: {
+              &quot;font_weight&quot;: &quot;normal&quot;,
+              &quot;text_effect&quot;: [],
+              &quot;outline_color&quot;: null,
+              &quot;shadow_type&quot;: &quot;none&quot;
+            },
+            &quot;container&quot;: &quot;none&quot;,
+            &quot;special_instructions&quot;: &quot;Large, prominent title text in dark teal color&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-2-1&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;Distributed teams unlock global talent pools, reduce overhead costs, and give employees flexibility to design their ideal work environment.&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Arial&quot;,
+            &quot;color&quot;: &quot;#000000&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;left-middle&quot;,
+            &quot;container&quot;: null,
+            &quot;container_opacity&quot;: null,
+            &quot;special_instructions&quot;: &quot;Left-aligned paragraph text, standard font weight&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-2-2&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;Cloud collaboration tools, video conferencing platforms, and asynchronous workflows enable productivity across time zones and enhance work-life integration.&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Arial&quot;,
+            &quot;color&quot;: &quot;#000000&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;left-bottom&quot;,
+            &quot;container&quot;: null,
+            &quot;container_opacity&quot;: null,
+            &quot;special_instructions&quot;: &quot;Left-aligned paragraph text, standard font weight&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;illustration-2-1&quot;,
+          &quot;type&quot;: &quot;illustration&quot;,
+          &quot;role&quot;: &quot;illustration&quot;,
+          &quot;content&quot;: &quot;A vibrant illustration depicting a bright home office: a bearded man with glasses in a light blue shirt works at a wooden standing desk on a large monitor showing code, sitting on an ergonomic chair. Potted plants surround the desk, a desk lamp and a coffee mug sit beside the monitor, a large window shows a sunny suburban street with houses, and a cat rests on a bookshelf in the corner.&quot;,
+          &quot;style&quot;: {
+            &quot;illustration_style&quot;: &quot;detailed landscape illustration&quot;,
+            &quot;color_scheme&quot;: &quot;vibrant greens, blues, and warm earth tones&quot;,
+            &quot;position&quot;: &quot;right side, vertically centered&quot;,
+            &quot;special_instructions&quot;: &quot;Large, detailed illustration occupying the right half of the slide, showing a comfortable, productive remote work setup&quot;
+          }
+        }
+      ]
+    }
+  ]
+}
+```</pre></details></figure><figure class="case template"><div class="pair"><div class="inputs n1"><span class="tag">Reference</span><a href="static/cases/template/05_platform_for_project_management_in1.jpg" target="_blank"><img src="static/cases/template/05_platform_for_project_management_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/template/05_platform_for_project_management_out.jpg" target="_blank"><img src="static/cases/template/05_platform_for_project_management_out.jpg" alt="Selecting a Platform for Project Management" loading="lazy"></a></div></div><figcaption>Selecting a Platform for Project Management</figcaption><details><summary>Instruction</summary><pre>A presentation slide titled &quot;Selecting a Suitable Platform for Project Management&quot; appears at the top in large text, situated above a horizontal bar with an orange segment followed by a blue segment. Below this, the slide focuses on &quot;Integration Capabilities,&quot; marked by an orange square bullet. The content lists three considerations with blue square bullets: first, the question &quot;Does the platform support API connections with existing tools&quot;; second, &quot;Can team member data sync with your HR management system&quot;; and finally, the advice to &quot;Consider that different departments may require different integration levels if working across multiple teams.&quot;
+
+**REFERENCE IMAGE USAGE:**
+- The attached image is the Reference Slide.
+
+### UNIFORM STYLE, DISTINCT ARRANGEMENT:
+#### MIRROR the Reference Slide on:
+- Background (color, texture, pattern)
+- Title style: font, color, size, container shape, position
+- Text bubble/container style: shape, border, shadow
+- Color palette and decorative elements
+- Theme and mood
+
+#### DIFFERENTIATE from the Reference Slide on:
+- Layout and composition structure
+- Placement and number of text containers
+- How content is spaced and grouped
+- Visual flow direction
+
+Generate a slide that belongs to the SAME presentation visually but arranges content in a DIFFERENT way.</pre></details></figure></div></div><div class="task" id="multi_image"><h3>Multi-image grounded generation</h3><p class="task-desc">A slide built around one to four supplied assets, such as photos, charts, and figures.</p><div class="cases multi_image"><figure class="case multi_image"><div class="pair"><div class="inputs n1"><span class="tag">Inputs</span><a href="static/cases/multi_image/02_roman_colosseum_in1.jpg" target="_blank"><img src="static/cases/multi_image/02_roman_colosseum_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/multi_image/02_roman_colosseum_out.jpg" target="_blank"><img src="static/cases/multi_image/02_roman_colosseum_out.jpg" alt="Roman Colosseum" loading="lazy"></a></div></div><figcaption>Roman Colosseum</figcaption><details><summary>Instruction</summary><pre>The slide features a warm-toned travel poster titled **&quot;ROMAN COLOSSEUM&quot;** in bold, classic serif lettering at the top, set against a muted parchment background with a thin decorative border. The layout is divided into three main columns: History, Architecture, and Experience, with a narrow bottom bar for brief visitor tips. In the center of the slide, a large sub image of the ancient amphitheater dominates the design, showing its curved stone arches under a deep blue sky.
+
+In the left column, under **History**, short lines read:  
+- &quot;Opened: 80 AD&quot;  
+- &quot;Commissioned by: Emperor Vespasian&quot;  
+- &quot;Used for: Games &amp; public events&quot;
+
+In the middle column, labeled **Architecture**, the text notes:  
+- &quot;Elliptical amphitheater&quot;  
+- &quot;Concrete &amp; travertine stone&quot;  
+- &quot;Tiers of arches &amp; columns&quot;
+
+In the right column, titled **Experience**, concise phrases appear:  
+- &quot;Walk the arena floor&quot;  
+- &quot;See underground passages&quot;  
+- &quot;Imagine the roaring crowds&quot;
+
+The bottom bar, labeled **VISITOR NOTES**, contains three tiny icons with minimal captions: a clock icon with &quot;Arrive early,&quot; a ticket icon with &quot;Book in advance,&quot; and a camera icon with &quot;Respect preservation rules.&quot; The overall emphasis of the slide stays on the sub image, allowing the visual of the Colosseum to be the primary focus.</pre></details></figure><figure class="case multi_image"><div class="pair"><div class="inputs n1"><span class="tag">Inputs</span><a href="static/cases/multi_image/01_island_getaway_in1.jpg" target="_blank"><img src="static/cases/multi_image/01_island_getaway_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/multi_image/01_island_getaway_out.jpg" target="_blank"><img src="static/cases/multi_image/01_island_getaway_out.jpg" alt="Island Horizons Getaway" loading="lazy"></a></div></div><figcaption>Island Horizons Getaway</figcaption><details><summary>Instruction</summary><pre>### ROLE
+You are a senior presentation art director and precision layout renderer.
+
+### TASK
+Render the given Structured Content JSON as one polished 16:9 presentation slide. Treat the JSON as the complete design brief: `global_style` controls the visual system, `visual_hierarchy` guides composition, and `blocks` provide the exact slide elements.
+
+### HARD RULES
+1. Use only text found in block `content`. Do not invent titles, labels, captions, summaries, or decorative copy.
+2. Follow `global_style` strictly for background, palette, typography, lighting, spacing language, and overall material feel.
+3. If `special_instructions` appears, it is the creative override. Apply it faithfully while still preserving the provided textual content.
+4. Avoid generic slides. Choose a composition that matches the content: editorial grid, hero visual, split layout, card system, timeline, layered diagram, or spacious minimalist treatment.
+5. Embed all source images into the slide.
+
+### QUALITY BAR
+The result should look like a professionally designed keynote slide: crisp text, intentional hierarchy, balanced whitespace, coherent color usage, and no clutter.
+
+### SLIDE JSON:
+```json
+{
+  &quot;global_style&quot;: {
+    &quot;theme_name&quot;: &quot;Tropical Travel &amp; Adventure&quot;,
+    &quot;background&quot;: {
+      &quot;color&quot;: &quot;#FFFFFF&quot;,
+      &quot;gradient&quot;: null,
+      &quot;texture&quot;: &quot;none&quot;,
+      &quot;pattern&quot;: null
+    },
+    &quot;font_palette&quot;: {
+      &quot;primary&quot;: &quot;Arial Black&quot;,
+      &quot;secondary&quot;: &quot;Arial&quot;
+    },
+    &quot;color_palette&quot;: {
+      &quot;primary&quot;: &quot;#8FD3E6&quot;,
+      &quot;secondary&quot;: &quot;#2C3E50&quot;,
+      &quot;text&quot;: &quot;#1A1A1A&quot;,
+      &quot;accent&quot;: &quot;#E8F4F8&quot;
+    },
+    &quot;special_instructions&quot;: &quot;The slide carries a refined, contemporary tropical journey aesthetic. Maintain a split layout with a large, vibrant anime-style illustration on the left and organized informational cards on the right. Use tropical blues, teals, and hints of warm sunset tones to create an uplifting, aspirational mood. Typography remains bold, clear, and sans-serif for strong readability.&quot;
+  },
+  &quot;visual_hierarchy&quot;: {
+    &quot;mood_tone&quot;: &quot;Playful, Inviting, Professional&quot;,
+    &quot;composition_style&quot;: &quot;Two-column (Image Left, Content Right)&quot;
+  },
+  &quot;styled_slides&quot;: [
+    {
+      &quot;slide_id&quot;: 571,
+      &quot;blocks&quot;: [
+        {
+          &quot;id&quot;: &quot;title-571&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;title&quot;,
+          &quot;content&quot;: &quot;ISLAND HORIZONS GETAWAY&quot;,
+          &quot;style&quot;: {
+            &quot;color&quot;: &quot;#FFFFFF&quot;,
+            &quot;font_family&quot;: &quot;Arial Black&quot;,
+            &quot;importance&quot;: &quot;dominant&quot;,
+            &quot;position&quot;: &quot;top-center, above main heading&quot;,
+            &quot;text_style&quot;: {
+              &quot;font_weight&quot;: &quot;bold&quot;,
+              &quot;text_effect&quot;: [],
+              &quot;outline_color&quot;: null,
+              &quot;shadow_type&quot;: &quot;none&quot;
+            },
+            &quot;container&quot;: &quot;bubble&quot;,
+            &quot;special_instructions&quot;: &quot;Text is white, uppercase, centered inside a rounded rectangular pill shape with a light blue background (#8FD3E6).&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;title-571-main&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;title&quot;,
+          &quot;content&quot;: &quot;SUNLIT SHORES, ENDLESS JOURNEYS&quot;,
+          &quot;style&quot;: {
+            &quot;color&quot;: &quot;#1A1A1A&quot;,
+            &quot;font_family&quot;: &quot;Arial Black&quot;,
+            &quot;importance&quot;: &quot;dominant&quot;,
+            &quot;position&quot;: &quot;top-center, below subtitle&quot;,
+            &quot;text_style&quot;: {
+              &quot;font_weight&quot;: &quot;bold&quot;,
+              &quot;text_effect&quot;: [],
+              &quot;outline_color&quot;: null,
+              &quot;shadow_type&quot;: &quot;none&quot;
+            },
+            &quot;container&quot;: &quot;none&quot;,
+            &quot;special_instructions&quot;: &quot;Large, bold, uppercase black text centered on the white background.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;image-571&quot;,
+          &quot;type&quot;: &quot;image&quot;,
+          &quot;role&quot;: &quot;visual_elements&quot;,
+          &quot;content&quot;: {
+            &quot;image_paths&quot;: [
+              {
+                &quot;path&quot;: &quot;imgs/img_in_image_box_40_39_520_766.jpg&quot;,
+                &quot;relative_path&quot;: &quot;imgs/img_in_image_box_40_39_520_766.jpg&quot;
+              }
+            ],
+            &quot;source&quot;: &quot;Main slide illustration&quot;,
+            &quot;caption&quot;: null
+          },
+          &quot;style&quot;: {
+            &quot;position&quot;: &quot;left side, vertically spanning from top to bottom&quot;,
+            &quot;image_style&quot;: &quot;rounded corners&quot;,
+            &quot;container&quot;: &quot;none&quot;,
+            &quot;special_instructions&quot;: &quot;A vertical anime-style illustration showing a couple on a wooden deck overlooking a tropical ocean with overwater bungalows, coral reefs, and palm trees. The image has rounded corners.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-571-1&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;COASTAL HIDEAWAYS\nSoft Sand Lagoon Beaches\nPanoramic Ocean Villas\nDrift-free Island Transfers&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Arial&quot;,
+            &quot;color&quot;: &quot;#1A1A1A&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;right column, first card&quot;,
+            &quot;container&quot;: &quot;rounded panel&quot;,
+            &quot;container_opacity&quot;: &quot;1.0&quot;,
+            &quot;special_instructions&quot;: &quot;Text is inside a white rounded rectangle card with a light blue border. Title is bold uppercase. List items are normal weight. Card has a circular illustration of a bungalow on an island at the top.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-571-2&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;SERENITY &amp; RENEWAL\nOcean Breeze Spa Rituals\nGolden Hour Beachflow Yoga\nCalm-Current Seaside Reflection&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Arial&quot;,
+            &quot;color&quot;: &quot;#1A1A1A&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;right column, second card&quot;,
+            &quot;container&quot;: &quot;rounded panel&quot;,
+            &quot;container_opacity&quot;: &quot;1.0&quot;,
+            &quot;special_instructions&quot;: &quot;Text is inside a white rounded rectangle card with a light blue border. Title is bold uppercase. List items are normal weight. Card has a circular illustration of a person doing yoga under palm trees at the top.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-571-3&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;OCEAN DISCOVERY QUESTS\nShimmering Reef Snorkel Trails\nBlue Depth Dive Expeditions\nClose-Up Encounters with Sea Life&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Arial&quot;,
+            &quot;color&quot;: &quot;#1A1A1A&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;right column, third card&quot;,
+            &quot;container&quot;: &quot;rounded panel&quot;,
+            &quot;container_opacity&quot;: &quot;1.0&quot;,
+            &quot;special_instructions&quot;: &quot;Text is inside a white rounded rectangle card with a light blue border. Title is bold uppercase. List items are normal weight. Card has a circular illustration of underwater coral and fish at the top.&quot;
+          }
+        },
+        {
+          &quot;id&quot;: &quot;body-571-4&quot;,
+          &quot;type&quot;: &quot;text&quot;,
+          &quot;role&quot;: &quot;body&quot;,
+          &quot;content&quot;: &quot;LOCAL RHYTHMS &amp; FLAVORS\nHarbor Villages &amp; Island Paths\nSunset Dhoni Voyages &amp; Cast-Line Fun\nSea-to-Table Island Tastings&quot;,
+          &quot;style&quot;: {
+            &quot;font_family&quot;: &quot;Arial&quot;,
+            &quot;color&quot;: &quot;#1A1A1A&quot;,
+            &quot;importance&quot;: &quot;supporting&quot;,
+            &quot;position&quot;: &quot;right column, fourth card&quot;,
+            &quot;container&quot;: &quot;rounded panel&quot;,
+            &quot;container_opacity&quot;: &quot;1.0&quot;,
+            &quot;special_instructions&quot;: &quot;Text is inside a white rounded rectangle card with a light blue border. Title is bold uppercase. List items are normal weight. Card has a circular illustration of a boat at sunset at the top.&quot;
+          }
+        }
+      ]
+    }
+  ]
+}
+```</pre></details></figure><figure class="case multi_image"><div class="pair"><div class="inputs n1"><span class="tag">Inputs</span><a href="static/cases/multi_image/03_tuning_models_in1.jpg" target="_blank"><img src="static/cases/multi_image/03_tuning_models_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/multi_image/03_tuning_models_out.jpg" target="_blank"><img src="static/cases/multi_image/03_tuning_models_out.jpg" alt="Tuning Models" loading="lazy"></a></div></div><figcaption>Tuning Models</figcaption><details><summary>Instruction</summary><pre>Set against a dark green background, this presentation slide features yellow text on the left and the sub image on the right. The slide is titled &quot;Tuning Models: Measuring the Gains&quot; in large font at the top. Below the title, two short lines of text read, &quot;Fine‑tuning reshapes error and accuracy across model sizes.&quot; and &quot;Comparing EER and F1 reveals the impact of KUQ training.&quot; To the right, the slide prominently displays the sub image—a white rectangular table contrasting original open‑source models with their (KUQ) fine‑tuned counterparts, highlighting improvements in EER and F1 scores.</pre></details></figure><figure class="case multi_image"><div class="pair"><div class="inputs n3"><span class="tag">Inputs</span><a href="static/cases/multi_image/04_visualization_experiments_in1.jpg" target="_blank"><img src="static/cases/multi_image/04_visualization_experiments_in1.jpg" alt="input" loading="lazy"></a><a href="static/cases/multi_image/04_visualization_experiments_in2.jpg" target="_blank"><img src="static/cases/multi_image/04_visualization_experiments_in2.jpg" alt="input" loading="lazy"></a><a href="static/cases/multi_image/04_visualization_experiments_in3.jpg" target="_blank"><img src="static/cases/multi_image/04_visualization_experiments_in3.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/multi_image/04_visualization_experiments_out.jpg" target="_blank"><img src="static/cases/multi_image/04_visualization_experiments_out.jpg" alt="Visualization Experiments" loading="lazy"></a></div></div><figcaption>Visualization Experiments</figcaption><details><summary>Instruction</summary><pre>The slide, styled with a clean white background and titled **Visualization Experiments** in large black text at the top, presents two primary figures. On the left, a grid of bird photographs and heatmaps is displayed, labeled below with **(a) Input**, **(b) Lcls**, **(c) + Lreg**, **(d) Lcdm + Lreg**, and **$$ (e) + L_{crm} $$**. Beneath this visual grid, the text reads: **Figure 4. Visualization of vision prompt based on classification-based evaluator (b)(c) and our vision-language evaluator (d)(e), respectively. +L means that we successively add this constraint, i.e., $ +L_{reg} = L_{cls} + L_{reg} + L_{crm} = L_{cdm} + L_{reg} + L_{crm} $**. To the right of this figure are two heatmaps positioned side-by-side. The left heatmap, which corresponds to sub-image 2, is labeled **(a) CUB-200-2011 Train Set**, while the right heatmap, corresponding to sub-image 3, is labeled **(b) CUB-200-2011 Test Set**. Below these charts, the caption states: **Figure 5. The nearest description for text prompt learned by PLEor, with their similarity shown in grids.**
+
+**IMPORTANT: 3 source image(s) are attached. You MUST embed ALL of them into the slide.**</pre></details></figure></div></div><div class="task" id="edit"><h3>Slide editing</h3><p class="task-desc">An instruction-based edit of an existing slide, from text and font changes to block insertion, image replacement, and theme switching.</p><div class="cases edit"><figure class="case edit"><div class="pair"><div class="inputs n1"><span class="tag">Source</span><a href="static/cases/edit/03_theme_switch_in1.jpg" target="_blank"><img src="static/cases/edit/03_theme_switch_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/edit/03_theme_switch_out.jpg" target="_blank"><img src="static/cases/edit/03_theme_switch_out.jpg" alt="Theme switch: Chinese Guochao style" loading="lazy"></a></div></div><figcaption>Theme switch: Chinese Guochao style</figcaption><details><summary>Instruction</summary><pre>Transform this slide into a Chinese Guochao (国潮) style: apply a bold Chinese red (#CC0000) background overlaid with subtle teal-green (#2E8B57) wave patterns, restyle the &quot;Spring&quot; title and body text in a modern blocky Chinese display font, and redraw the butterflies and flowers as trendy, flat-vector illustrations with thick black outlines and auspicious cloud accents.</pre></details></figure><figure class="case edit"><div class="pair"><div class="inputs n1"><span class="tag">Source</span><a href="static/cases/edit/05_image_change_in1.jpg" target="_blank"><img src="static/cases/edit/05_image_change_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/edit/05_image_change_out.jpg" target="_blank"><img src="static/cases/edit/05_image_change_out.jpg" alt="Replace the icon with a rocket photo" loading="lazy"></a></div></div><figcaption>Replace the icon with a rocket photo</figcaption><details><summary>Instruction</summary><pre>Replace the graphic on the left side of the slide, which currently shows a white exploding battery icon inside a yellow grunge frame, with a new image of a white rocket launching upward with a trail of smoke, keeping it within the same yellow grunge frame.</pre></details></figure><figure class="case edit"><div class="pair"><div class="inputs n1"><span class="tag">Source</span><a href="static/cases/edit/02_add_block_in1.jpg" target="_blank"><img src="static/cases/edit/02_add_block_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/edit/02_add_block_out.jpg" target="_blank"><img src="static/cases/edit/02_add_block_out.jpg" alt="Insert the author names" loading="lazy"></a></div></div><figcaption>Insert the author names</figcaption><details><summary>Instruction</summary><pre>Insert the author names &quot;Debolina Paul Saptarshi Chakraborty Swagatam Das Jason Xu&quot; as a new line of text centered below the main title.</pre></details></figure><figure class="case edit"><div class="pair"><div class="inputs n1"><span class="tag">Source</span><a href="static/cases/edit/04_change_font_in1.jpg" target="_blank"><img src="static/cases/edit/04_change_font_in1.jpg" alt="input" loading="lazy"></a></div><div class="arrow">→</div><div class="output"><span class="tag">InfoVis</span><a href="static/cases/edit/04_change_font_out.jpg" target="_blank"><img src="static/cases/edit/04_change_font_out.jpg" alt="Change the body font" loading="lazy"></a></div></div><figcaption>Change the body font</figcaption><details><summary>Instruction</summary><pre>Change the font of the body text &quot;• Pause and Evaluate the Situation • Apply the Eisenhower Matrix • Communicate Priorities Clearly • Protect Critical Operations • Be Flexible and Adapt Quickly • Delegate and Empower Others • Learn and Document for Future Preparedness&quot; to Georgia.</pre></details></figure></div></div>
+  </section>
+  <section>
+    <h2>Slide Data Engine</h2>
+    <p>Continual pretraining uses over 13M records built from real presentations: academic talks and presentations from sharing websites are parsed into text and localized assets, and each page is annotated with a short request, a detailed description, and a style_json specification. The same target slide yields text-to-slide, template-conditioned, and multi-image records, and executable PPTX operations produce editing pairs. Supervised fine-tuning adds 1.9M curated records synthesized with Nano-Banana-2.</p>
+    <img class="figure" src="static/images/data_engine.jpg" alt="Slide data engine" loading="lazy">
+  </section>
+  <section>
+    <h2>VisSlideBench</h2>
+    <p>VisSlideBench contains 1,527 manually screened cases across the four tasks. Generation is scored on content faithfulness (with OCR-based text matching), instruction following, and aesthetic quality; editing is scored on semantic consistency and presentation quality. Its automatic rankings agree with blinded, dimension-wise human rankings.</p>
+    <img class="figure" src="static/images/bench_evaluation.jpg" alt="VisSlideBench evaluation" loading="lazy">
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th rowspan="2">Type</th><th rowspan="2">Model</th><th colspan="3">T2I</th><th colspan="3">Template</th><th colspan="3">Multi-image</th><th colspan="2">Edit</th><th rowspan="2">Overall</th></tr>
+        <tr><th>CF</th><th>IF</th><th>AQ</th><th>CF</th><th>IF</th><th>AQ</th><th>CF</th><th>IF</th><th>AQ</th><th>SC</th><th>PQ</th></tr>
+      </thead>
+      <tbody><tr><td class="group" rowspan="3">Proprietary</td><td class='model'>GPT-Image-2</td><td>8.52</td><td>8.57</td><td>7.71</td><td>8.19</td><td>8.51</td><td>7.62</td><td>8.93</td><td>8.44</td><td>7.61</td><td>9.80</td><td>8.04</td><td>8.36</td></tr><tr><td class='model'>Nano-Banana-2</td><td>8.38</td><td>8.17</td><td>7.33</td><td>7.59</td><td>7.95</td><td>7.08</td><td>8.60</td><td>7.93</td><td>7.14</td><td>9.70</td><td>8.03</td><td>7.99</td></tr><tr><td class='model'>Qwen-Image-2</td><td>7.18</td><td>6.89</td><td>6.38</td><td>8.23</td><td>6.29</td><td>5.74</td><td>6.97</td><td>6.25</td><td>5.55</td><td>4.96</td><td>6.47</td><td>6.45</td></tr><tr><td class="group" rowspan="11">Open-source</td><td class='model'>Qwen-Image</td><td>6.50</td><td>6.34</td><td>5.17</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr><tr><td class='model'>Z-Image-Turbo</td><td>6.66</td><td>6.84</td><td>5.79</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr><tr><td class='model'>LongCat-Image</td><td>4.69</td><td>5.47</td><td>4.25</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr><tr><td class='model'>Qwen-Image-Edit</td><td>–</td><td>–</td><td>–</td><td>3.10</td><td>5.98</td><td>5.41</td><td>4.34</td><td>4.74</td><td>4.12</td><td>7.77</td><td>7.37</td><td>–</td></tr><tr><td class='model'>LongCat-Image-Edit</td><td>–</td><td>–</td><td>–</td><td>4.86</td><td>5.99</td><td>5.04</td><td>5.25</td><td>5.10</td><td>4.51</td><td>6.64</td><td>6.62</td><td>–</td></tr><tr><td class='model'>FLUX.2-dev</td><td>6.60</td><td>7.08</td><td>5.29</td><td>6.28</td><td>7.38</td><td>5.22</td><td>6.54</td><td>7.13</td><td>5.20</td><td>6.12</td><td>7.18</td><td>6.37</td></tr><tr><td class='model'>FLUX.2-klein-base-9B</td><td>6.29</td><td>7.11</td><td>5.19</td><td>6.44</td><td>7.24</td><td>5.40</td><td>6.57</td><td>6.99</td><td>5.32</td><td>5.98</td><td>6.72</td><td>6.30</td></tr><tr><td class='model'>HiDream-O1-Image</td><td>6.82</td><td>5.62</td><td>4.68</td><td>5.97</td><td>5.14</td><td>4.50</td><td>5.60</td><td>4.90</td><td>4.17</td><td>2.23</td><td>3.77</td><td>4.85</td></tr><tr><td class='model'>BAGEL</td><td>3.50</td><td>5.68</td><td>3.79</td><td>3.31</td><td>5.17</td><td>3.73</td><td>3.74</td><td>4.76</td><td>3.55</td><td>5.10</td><td>6.17</td><td>4.41</td></tr><tr><td class='model'>OmniGen2</td><td>3.89</td><td>5.13</td><td>3.14</td><td>3.75</td><td>5.82</td><td>3.34</td><td>4.06</td><td>4.90</td><td>3.23</td><td>2.82</td><td>5.22</td><td>4.12</td></tr><tr class="ours"><td class='model'>InfoVis (ours)</td><td>8.42</td><td>8.01</td><td>7.02</td><td>8.14</td><td>8.09</td><td>7.00</td><td>8.71</td><td>8.01</td><td>7.06</td><td>9.13</td><td>7.75</td><td>7.94</td></tr></tbody>
+    </table>
+    </div>
+    <p class="caption">Main results on VisSlideBench. CF: content faithfulness, IF: instruction following, AQ: aesthetic quality, SC: semantic consistency, PQ: presentation quality. Overall averages the eleven metrics.</p>
+  </section>
+  <section>
+    <h2>BibTeX</h2>
+    <div class="bibtex"><button id="copy" type="button">Copy</button><pre id="bib">@article{wang2026infovis,
+  title={InfoVis: Unified Slide Image Generation and Editing},
+  author={Jiahao Wang and Xiyan Jiang and Chenyuan Wu and Haoqiang Zhang and Xin Luo and Yueze Wang and Defu Lian and Bo Zhang and Jiajun Zhang and Zheng Liu},
+  journal={arXiv preprint arXiv:2610.16784},
+  year={2026}
+}</pre></div>
+  </section>
+</main>
+<footer>
+  <p>Code: Apache-2.0. Model: FLUX Non-Commercial License (derivative of FLUX.2-klein-base-9B). VisSlideBench and training data: CC BY-NC 4.0.</p>
+</footer>
+<script>
+document.getElementById("copy").addEventListener("click", function () {
+  navigator.clipboard.writeText(document.getElementById("bib").textContent).then(() => {
+    this.textContent = "Copied"; setTimeout(() => (this.textContent = "Copy"), 1500);
+  });
+});
+</script>
+</body>
+</html>
