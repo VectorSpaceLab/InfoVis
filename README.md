@@ -2,6 +2,7 @@
 
 <p align="center">
   <a href="https://arxiv.org/abs/2610.16784"><img src="https://img.shields.io/badge/arXiv-2610.16784-b31b1b.svg" alt="arxiv"></a>
+  <a href="https://vectorspacelab.github.io/InfoVis/"><img src="https://img.shields.io/badge/Project-Page-green" alt="project page"></a>
   <a href="https://huggingface.co/InfoVis/InfoVis"><img src="https://img.shields.io/badge/InfoVis-🤗-yellow" alt="model"></a>
   <a href="https://huggingface.co/spaces/sabulin/InfoVis"><img src="https://img.shields.io/badge/Demo-🤗%20Space-blue" alt="demo"></a>
   <a href="https://huggingface.co/datasets/InfoVis/VisSlideBench"><img src="https://img.shields.io/badge/VisSlideBench-🤗-yellow" alt="benchmark"></a>
