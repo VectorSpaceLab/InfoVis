@@ -3,6 +3,7 @@
 <p align="center">
   <a href="https://arxiv.org/abs/2610.16784"><img src="https://img.shields.io/badge/arXiv-2610.16784-b31b1b.svg" alt="arxiv"></a>
   <a href="https://huggingface.co/InfoVis/InfoVis"><img src="https://img.shields.io/badge/InfoVis-🤗-yellow" alt="model"></a>
+  <a href="https://huggingface.co/spaces/sabulin/InfoVis"><img src="https://img.shields.io/badge/Demo-🤗%20Space-blue" alt="demo"></a>
   <a href="https://huggingface.co/datasets/InfoVis/VisSlideBench"><img src="https://img.shields.io/badge/VisSlideBench-🤗-yellow" alt="benchmark"></a>
   <a href="https://huggingface.co/datasets/InfoVis/Data"><img src="https://img.shields.io/badge/InfoVis--Data-🤗-yellow" alt="data"></a>
 </p>
@@ -32,6 +33,7 @@
 
 ## 🔥 News
 
+- **2026-10**: Try InfoVis online in our [Hugging Face Space](https://huggingface.co/spaces/sabulin/InfoVis).
 - **2026-10**: The paper is on [arXiv](https://arxiv.org/abs/2610.16784). Code, model weights, VisSlideBench with its evaluation code, and all training data (continual pretraining and SFT) are released.
 
 ## 📖 Introduction
@@ -57,6 +59,8 @@ Per-task results and more baselines are in the paper.
 - [x] Continual-pretraining data.
 
 ## 🚀 Quick Start
+
+No GPU at hand? Try InfoVis in the browser on the [Hugging Face Space](https://huggingface.co/spaces/sabulin/InfoVis).
 
 ### 🛠️ Environment Setup
 

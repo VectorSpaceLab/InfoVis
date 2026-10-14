@@ -3,6 +3,7 @@
 <p align="center">
   <a href="https://arxiv.org/abs/2610.16784"><img src="https://img.shields.io/badge/arXiv-2610.16784-b31b1b.svg" alt="arxiv"></a>
   <a href="https://huggingface.co/InfoVis/InfoVis"><img src="https://img.shields.io/badge/InfoVis-🤗-yellow" alt="model"></a>
+  <a href="https://huggingface.co/spaces/sabulin/InfoVis"><img src="https://img.shields.io/badge/Demo-🤗%20Space-blue" alt="demo"></a>
   <a href="https://huggingface.co/datasets/InfoVis/VisSlideBench"><img src="https://img.shields.io/badge/VisSlideBench-🤗-yellow" alt="benchmark"></a>
   <a href="https://huggingface.co/datasets/InfoVis/Data"><img src="https://img.shields.io/badge/InfoVis--Data-🤗-yellow" alt="data"></a>
 </p>
@@ -32,6 +33,7 @@
 
 ## 🔥 最新动态
 
+- **2026-10**：在线体验已上线：[Hugging Face Space](https://huggingface.co/spaces/sabulin/InfoVis)。
 - **2026-10**：论文已发布在 [arXiv](https://arxiv.org/abs/2610.16784)；代码、模型权重、VisSlideBench 及评测代码，以及全部训练数据（继续预训练与 SFT）均已发布。
 
 ## 📖 简介
@@ -57,6 +59,8 @@ InfoVis 的训练分三个阶段：幻灯片继续预训练、四任务混合继
 - [x] 继续预训练数据。
 
 ## 🚀 快速开始
+
+无需安装，可以直接在浏览器中体验：[Hugging Face Space](https://huggingface.co/spaces/sabulin/InfoVis)。
 
 ### 🛠️ 环境配置
 
